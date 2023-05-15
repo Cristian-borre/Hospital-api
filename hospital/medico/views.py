@@ -18,7 +18,7 @@ class MedicoView(View):
 
     def get(self, request, id = 0):
         if id > 0:
-            medico = list(MedicoModel.objects.filter(id=id).values())
+            medico = list(MedicoModel.objects.filter(documento=id).values())
             if len(medico) > 0:
                 medico = medico[0]
                 datos = {'message':'Medico Listado', 'Medico':medico}
@@ -46,9 +46,9 @@ class MedicoView(View):
 
     def put(self, request, id):
         jd = json.loads(request.body)
-        medico = list(MedicoModel.objects.filter(id=id).values())
+        medico = list(MedicoModel.objects.filter(documento=id).values())
         if len(medico) > 0:
-            medico = MedicoModel.objects.get(id = id)
+            medico = MedicoModel.objects.get(documento = id)
             medico.documento = jd['documento']
             medico.nombre = jd['nombre']
             medico.apellido = jd['apellido']
@@ -60,9 +60,9 @@ class MedicoView(View):
         return JsonResponse(datos)
     
     def delete(self, request, id):
-        medico = list(MedicoModel.objects.filter(id=id).values())
+        medico = list(MedicoModel.objects.filter(documento=id).values())
         if len(medico) > 0:
-            medico = MedicoModel.objects.get(id = id)
+            medico = MedicoModel.objects.get(documento=id)
             medico.estado = False
             medico.save()
             datos = {'message':'Medico eliminado'}
