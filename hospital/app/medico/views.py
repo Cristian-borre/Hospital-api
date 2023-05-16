@@ -7,10 +7,13 @@ from django.utils.decorators import method_decorator
 from .models import MedicoModel
 from django.http.response import JsonResponse
 import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .serializer import MedicoSerializer
 
 # Create your views here.
 
-class MedicoView(View):
+class MedicoView(APIView):
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args ,**kwargs):
@@ -44,21 +47,18 @@ class MedicoView(View):
             datos = {'message':'Medico no creado'}
             return JsonResponse(datos)
 
-    def put(self, request, id):
-        jd = json.loads(request.body)
-        medico = list(MedicoModel.objects.filter(documento=id).values())
-        if len(medico) > 0:
-            medico = MedicoModel.objects.get(documento = id)
-            medico.documento = jd['documento']
-            medico.nombre = jd['nombre']
-            medico.apellido = jd['apellido']
-            medico.telefono = jd['telefono']
-            medico.save()
-            datos = {'message':'Medico actualizado'}
-        else:
-            datos = {'message':'Medico no encontrado'}
-        return JsonResponse(datos)
-    
+    def patch(self, request, id):
+        try:
+            medico = MedicoModel.objects.get(documento=id)
+        except MedicoModel.DoesNotExist:
+            return Response(status=400)
+
+        serializer = MedicoSerializer(medico, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=400)
+
     def delete(self, request, id):
         medico = list(MedicoModel.objects.filter(documento=id).values())
         if len(medico) > 0:
