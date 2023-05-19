@@ -40,6 +40,10 @@ INSTALLED_APPS = [
 
     'app.medico',
     'app.consultorio',
+    'app.medicamento',
+    'app.tratamiento',
+    'app.paciente',
+    'app.cita',
     'rest_framework'
 ]
 
